@@ -10,7 +10,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/entradas")
 public class EntradaController {
- // entrada echa 
+ // entrada echa CAMBIO 2 
     // Simulando una base de datos en memoria
     private Map<Integer, Entrada> entradas = new HashMap<>();
     private Map<Integer, DetalleEntrada> detallesEntrada = new HashMap<>();
