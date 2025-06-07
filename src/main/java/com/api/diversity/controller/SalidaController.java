@@ -46,12 +46,13 @@ public class SalidaController {
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public Salida eliminarSalida(@PathVariable Integer id) {
+    public String eliminarSalida(@PathVariable Integer id) {
         Salida salidaActual = buscarSalida(id);
         if (salidaActual != null) {
             salidas.remove(salidaActual);
+            return "Salida eliminada correctamente.";
         }
-        return salidaActual;
+        return "No se encontró la salida con el ID proporcionado.";
     }
 
     // --- Métodos para DetalleSalida ---
@@ -89,11 +90,12 @@ public class SalidaController {
     }
 
     @DeleteMapping("/detalles/eliminar/{id}")
-    public DetalleSalida eliminarDetalle(@PathVariable Integer id) {
+    public String eliminarDetalle(@PathVariable Integer id) {
         DetalleSalida detalleActual = buscarDetalle(id);
         if (detalleActual != null) {
             detalles.remove(detalleActual);
+            return "Detalle de salida eliminado correctamente.";
         }
-        return detalleActual;
+        return "No se encontró el detalle de salida con el ID proporcionado.";
     }
 }
