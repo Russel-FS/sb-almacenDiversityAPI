@@ -14,27 +14,46 @@ public class ProductoController {
     private static List<Producto> productos = new ArrayList<Producto>();
 
     @GetMapping("/listar")
-    public String listarProductos() {
-        return "Lista de productos";
+    public List<Producto> listarProductos() {
+        return productos;
     }
 
     @GetMapping("/buscar/{id}")
-    public String buscarProducto(@PathVariable String id) {
-        return "" + id;
+    public Producto buscarProducto(@PathVariable String id) {
+        return productos.stream()
+                .filter(producto -> producto.getIdProducto().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     @PostMapping("/crear")
-    public String crearProducto(@RequestBody Producto producto) {
-        return "";
+    public Producto crearProducto(@RequestBody Producto producto) {
+        producto.setIdProducto(productos.size() + 1);
+        productos.add(producto);
+
+        return producto;
     }
 
     @PutMapping("/actualizar/{id}")
-    public String actualizarProducto(@PathVariable String id, @RequestBody Producto producto) {
-        return "" + id;
+    public Producto actualizarProducto(@PathVariable String id, @RequestBody Producto producto) {
+        Producto productoActual = buscarProducto(id);
+        if (productoActual != null) {
+            productoActual.setNombre(producto.getNombre());
+            productoActual.setDescripcion(producto.getDescripcion());
+            productoActual.setCategoriaId(producto.getCategoriaId());
+            productoActual.setStock(producto.getStock());
+            productoActual.setPrecioUnitario(producto.getPrecioUnitario());
+            productoActual.setFechaRegistro(producto.getFechaRegistro());
+        }
+        return productoActual;
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public String eliminarProducto(@PathVariable String id) {
-        return "" + id;
+    public Producto eliminarProducto(@PathVariable String id) {
+        Producto productoActual = buscarProducto(id);
+        if (productoActual != null) {
+            productos.remove(productoActual);
+        }
+        return productoActual;
     }
 }
