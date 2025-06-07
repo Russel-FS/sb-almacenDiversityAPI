@@ -24,7 +24,7 @@ public class UsuarioController {
     // GET: /api/Usuario/buscar/{id}
     @GetMapping("/buscar/{id}")
     public Usuario buscarUsuario(@PathVariable Integer id) {
-        // Lógica de búsqueda con Stream, idéntica a tu ejemplo
+        
         return usuarios.stream()
                 .filter(usuario -> usuario.getIdUsuario().equals(id))
                 .findFirst()
@@ -56,7 +56,7 @@ public class UsuarioController {
     // DELETE: /api/Usuario/eliminar/{id}
     @DeleteMapping("/eliminar/{id}")
     public Usuario eliminarUsuario(@PathVariable Integer id) {
-        // Lógica para eliminar, idéntica a tu ejemplo
+       
         Usuario usuarioAEliminar = buscarUsuario(id);
         if (usuarioAEliminar != null) {
             usuarios.remove(usuarioAEliminar);
