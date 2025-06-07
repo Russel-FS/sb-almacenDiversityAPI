@@ -1,11 +1,17 @@
 package com.api.diversity.controller;
 
 import com.api.diversity.model.Producto;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/productos")
 public class ProductoController {
+
+    private static List<Producto> productos = new ArrayList<Producto>();
 
     @GetMapping("/listar")
     public String listarProductos() {
