@@ -2,8 +2,8 @@ package com.api.diversity.controller;
 
 import com.api.diversity.model.Categoria;
 
-//import java.util.ArrayList;
-//import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/categorias")
 public class CategoriaController {
 
-   // private static List<Categoria> categorias = new ArrayList<Categoria>();
+    private static List<Categoria> categorias = new ArrayList<Categoria>();
 
     @GetMapping("/listar")
     public List<Categoria> listarCategorias() {
