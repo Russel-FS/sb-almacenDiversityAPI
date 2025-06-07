@@ -9,7 +9,7 @@ public class Producto {
     private String idProducto;
     private String nombre;
     private String descripcion;
-    private Categoria categoria;
+    private Integer categoriaId;
     private Integer stock;
     private BigDecimal precioUnitario;
     private LocalDateTime fechaRegistro;

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 @Data
 public class Inventario {
     private Integer idInventario;
-    private Producto producto;
+    private String productoId;
     private Integer stockInicial;
     private Integer totalEntradas;
     private Integer totalSalidas;

@@ -8,10 +8,10 @@ import java.util.List;
 @Data
 public class Pedido {
     private Integer idPedido;
-    private Cliente cliente;
+    private Integer clienteId;
     private LocalDateTime fechaPedido;
     private BigDecimal totalPedido;
     private String estadoPedido;
-    private Usuario usuario;
+    private Integer usuarioId;
     private List<DetallePedido> detalles;
 }
