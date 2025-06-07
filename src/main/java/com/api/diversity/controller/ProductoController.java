@@ -19,7 +19,7 @@ public class ProductoController {
     }
 
     @GetMapping("/buscar/{id}")
-    public Producto buscarProducto(@PathVariable String id) {
+    public Producto buscarProducto(@PathVariable Integer id) {
         return productos.stream()
                 .filter(producto -> producto.getIdProducto().equals(id))
                 .findFirst()
@@ -30,12 +30,11 @@ public class ProductoController {
     public Producto crearProducto(@RequestBody Producto producto) {
         producto.setIdProducto(productos.size() + 1);
         productos.add(producto);
-
         return producto;
     }
 
     @PutMapping("/actualizar/{id}")
-    public Producto actualizarProducto(@PathVariable String id, @RequestBody Producto producto) {
+    public Producto actualizarProducto(@PathVariable Integer id, @RequestBody Producto producto) {
         Producto productoActual = buscarProducto(id);
         if (productoActual != null) {
             productoActual.setNombre(producto.getNombre());
@@ -49,7 +48,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public Producto eliminarProducto(@PathVariable String id) {
+    public Producto eliminarProducto(@PathVariable Integer id) {
         Producto productoActual = buscarProducto(id);
         if (productoActual != null) {
             productos.remove(productoActual);
