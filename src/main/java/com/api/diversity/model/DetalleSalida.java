@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public class DetalleSalida {
     private Integer idDetalleSalida;
     private Integer salidaId;
-    private String productoId;
+    private String ID_Producto;
     private Integer cantidad;
     private BigDecimal subtotal;
 }
