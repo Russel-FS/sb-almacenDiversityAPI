@@ -11,10 +11,10 @@ import java.util.List;
 @RequestMapping("/api/salidas")
 public class SalidaController {
 
-    // Cambia estos valores según tu configuración
-    private static final String URL = "jdbc:mysql://localhost:3306/JC_Diversity";
+    
+    private static final String URL = "jdbc:mysql://localhost:3306/diversity_inventory";
     private static final String USER = "root";
-    private static final String PASS = ""; // tu contraseña
+    private static final String PASS = ""; 
 
     // --- Métodos para Salida ---
 
@@ -27,9 +27,17 @@ public class SalidaController {
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 Salida salida = new Salida();
-                salida.setIdSalida(rs.getInt("ID_Salida"));
+                salida.setIdSalida(rs.getLong("ID_Salida"));
+                salida.setNumeroDocumento(rs.getString("Numero_Documento"));
+                salida.setTipoDocumento(rs.getString("Tipo_Documento"));
                 salida.setFechaSalida(rs.getTimestamp("Fecha_Salida"));
                 salida.setMotivoSalida(rs.getString("Motivo_Salida"));
+                salida.setTotalVenta(rs.getBigDecimal("Total_Venta"));
+                salida.setEstado(rs.getString("Estado"));
+                salida.setIdUsuarioRegistro(rs.getLong("ID_Usuario_Registro"));
+                salida.setIdUsuarioAprobacion(rs.getObject("ID_Usuario_Aprobacion") != null ? rs.getLong("ID_Usuario_Aprobacion") : null);
+                salida.setFechaAprobacion(rs.getTimestamp("Fecha_Aprobacion"));
+                salida.setObservaciones(rs.getString("Observaciones"));
                 salidas.add(salida);
             }
         } catch (SQLException e) {
@@ -39,18 +47,26 @@ public class SalidaController {
     }
 
     @GetMapping("/buscar/{id}")
-    public Salida buscarSalida(@PathVariable Integer id) {
+    public Salida buscarSalida(@PathVariable Long id) {
         Salida salida = null;
         String sql = "SELECT * FROM Salidas WHERE ID_Salida = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     salida = new Salida();
-                    salida.setIdSalida(rs.getInt("ID_Salida"));
+                    salida.setIdSalida(rs.getLong("ID_Salida"));
+                    salida.setNumeroDocumento(rs.getString("Numero_Documento"));
+                    salida.setTipoDocumento(rs.getString("Tipo_Documento"));
                     salida.setFechaSalida(rs.getTimestamp("Fecha_Salida"));
                     salida.setMotivoSalida(rs.getString("Motivo_Salida"));
+                    salida.setTotalVenta(rs.getBigDecimal("Total_Venta"));
+                    salida.setEstado(rs.getString("Estado"));
+                    salida.setIdUsuarioRegistro(rs.getLong("ID_Usuario_Registro"));
+                    salida.setIdUsuarioAprobacion(rs.getObject("ID_Usuario_Aprobacion") != null ? rs.getLong("ID_Usuario_Aprobacion") : null);
+                    salida.setFechaAprobacion(rs.getTimestamp("Fecha_Aprobacion"));
+                    salida.setObservaciones(rs.getString("Observaciones"));
                 }
             }
         } catch (SQLException e) {
@@ -61,15 +77,27 @@ public class SalidaController {
 
     @PostMapping("/crear")
     public Salida crearSalida(@RequestBody Salida salida) {
-        String sql = "INSERT INTO Salidas (Fecha_Salida, Motivo_Salida) VALUES (?, ?)";
+        String sql = "INSERT INTO Salidas (Numero_Documento, Tipo_Documento, Fecha_Salida, Motivo_Salida, Total_Venta, Estado, ID_Usuario_Registro, ID_Usuario_Aprobacion, Fecha_Aprobacion, Observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setTimestamp(1, new Timestamp(salida.getFechaSalida().getTime()));
-            ps.setString(2, salida.getMotivoSalida());
+            ps.setString(1, salida.getNumeroDocumento());
+            ps.setString(2, salida.getTipoDocumento());
+            ps.setTimestamp(3, salida.getFechaSalida());
+            ps.setString(4, salida.getMotivoSalida());
+            ps.setBigDecimal(5, salida.getTotalVenta());
+            ps.setString(6, salida.getEstado());
+            ps.setLong(7, salida.getIdUsuarioRegistro());
+            if (salida.getIdUsuarioAprobacion() != null) {
+                ps.setLong(8, salida.getIdUsuarioAprobacion());
+            } else {
+                ps.setNull(8, Types.BIGINT);
+            }
+            ps.setTimestamp(9, salida.getFechaAprobacion());
+            ps.setString(10, salida.getObservaciones());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    salida.setIdSalida(rs.getInt(1));
+                    salida.setIdSalida(rs.getLong(1));
                 }
             }
         } catch (SQLException e) {
@@ -79,13 +107,25 @@ public class SalidaController {
     }
 
     @PutMapping("/actualizar/{id}")
-    public Salida actualizarSalida(@PathVariable Integer id, @RequestBody Salida salida) {
-        String sql = "UPDATE Salidas SET Fecha_Salida = ?, Motivo_Salida = ? WHERE ID_Salida = ?";
+    public Salida actualizarSalida(@PathVariable Long id, @RequestBody Salida salida) {
+        String sql = "UPDATE Salidas SET Numero_Documento=?, Tipo_Documento=?, Fecha_Salida=?, Motivo_Salida=?, Total_Venta=?, Estado=?, ID_Usuario_Registro=?, ID_Usuario_Aprobacion=?, Fecha_Aprobacion=?, Observaciones=? WHERE ID_Salida=?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setTimestamp(1, new Timestamp(salida.getFechaSalida().getTime()));
-            ps.setString(2, salida.getMotivoSalida());
-            ps.setInt(3, id);
+            ps.setString(1, salida.getNumeroDocumento());
+            ps.setString(2, salida.getTipoDocumento());
+            ps.setTimestamp(3, salida.getFechaSalida());
+            ps.setString(4, salida.getMotivoSalida());
+            ps.setBigDecimal(5, salida.getTotalVenta());
+            ps.setString(6, salida.getEstado());
+            ps.setLong(7, salida.getIdUsuarioRegistro());
+            if (salida.getIdUsuarioAprobacion() != null) {
+                ps.setLong(8, salida.getIdUsuarioAprobacion());
+            } else {
+                ps.setNull(8, Types.BIGINT);
+            }
+            ps.setTimestamp(9, salida.getFechaAprobacion());
+            ps.setString(10, salida.getObservaciones());
+            ps.setLong(11, id);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,11 +134,11 @@ public class SalidaController {
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public String eliminarSalida(@PathVariable Integer id) {
+    public String eliminarSalida(@PathVariable Long id) {
         String sql = "DELETE FROM Salidas WHERE ID_Salida = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setLong(1, id);
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 return "Salida eliminada correctamente.";
@@ -120,11 +160,15 @@ public class SalidaController {
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 DetalleSalida detalle = new DetalleSalida();
-                detalle.setIdDetalleSalida(rs.getInt("ID_Detalle_Salida"));
-                detalle.setSalidaId(rs.getInt("ID_Salida"));
-                detalle.setID_Producto(rs.getString("ID_Producto"));
+                detalle.setIdDetalleSalida(rs.getLong("ID_Detalle_Salida"));
+                detalle.setIdSalida(rs.getLong("ID_Salida"));
+                detalle.setIdProducto(rs.getLong("ID_Producto"));
                 detalle.setCantidad(rs.getInt("Cantidad"));
+                detalle.setPrecioUnitario(rs.getBigDecimal("Precio_Unitario"));
                 detalle.setSubtotal(rs.getBigDecimal("Subtotal"));
+                detalle.setIdUsuarioRegistro(rs.getLong("ID_Usuario_Registro"));
+                detalle.setFechaRegistro(rs.getTimestamp("Fecha_Registro"));
+                detalle.setEstado(rs.getString("Estado"));
                 detalles.add(detalle);
             }
         } catch (SQLException e) {
@@ -134,20 +178,24 @@ public class SalidaController {
     }
 
     @GetMapping("/detalles/buscar/{id}")
-    public DetalleSalida buscarDetalle(@PathVariable Integer id) {
+    public DetalleSalida buscarDetalle(@PathVariable Long id) {
         DetalleSalida detalle = null;
         String sql = "SELECT * FROM Detalle_Salida WHERE ID_Detalle_Salida = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     detalle = new DetalleSalida();
-                    detalle.setIdDetalleSalida(rs.getInt("ID_Detalle_Salida"));
-                    detalle.setSalidaId(rs.getInt("ID_Salida"));
-                    detalle.setID_Producto(rs.getString("ID_Producto"));
+                    detalle.setIdDetalleSalida(rs.getLong("ID_Detalle_Salida"));
+                    detalle.setIdSalida(rs.getLong("ID_Salida"));
+                    detalle.setIdProducto(rs.getLong("ID_Producto"));
                     detalle.setCantidad(rs.getInt("Cantidad"));
+                    detalle.setPrecioUnitario(rs.getBigDecimal("Precio_Unitario"));
                     detalle.setSubtotal(rs.getBigDecimal("Subtotal"));
+                    detalle.setIdUsuarioRegistro(rs.getLong("ID_Usuario_Registro"));
+                    detalle.setFechaRegistro(rs.getTimestamp("Fecha_Registro"));
+                    detalle.setEstado(rs.getString("Estado"));
                 }
             }
         } catch (SQLException e) {
@@ -158,17 +206,21 @@ public class SalidaController {
 
     @PostMapping("/detalles/crear")
     public DetalleSalida crearDetalle(@RequestBody DetalleSalida detalle) {
-        String sql = "INSERT INTO Detalle_Salida (ID_Salida, ID_Producto, Cantidad, Subtotal) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Detalle_Salida (ID_Salida, ID_Producto, Cantidad, Precio_Unitario, Subtotal, ID_Usuario_Registro, Fecha_Registro, Estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, detalle.getSalidaId());
-            ps.setString(2, detalle.getID_Producto());
+            ps.setLong(1, detalle.getIdSalida());
+            ps.setLong(2, detalle.getIdProducto());
             ps.setInt(3, detalle.getCantidad());
-            ps.setBigDecimal(4, detalle.getSubtotal());
+            ps.setBigDecimal(4, detalle.getPrecioUnitario());
+            ps.setBigDecimal(5, detalle.getSubtotal());
+            ps.setLong(6, detalle.getIdUsuarioRegistro());
+            ps.setTimestamp(7, detalle.getFechaRegistro());
+            ps.setString(8, detalle.getEstado());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    detalle.setIdDetalleSalida(rs.getInt(1));
+                    detalle.setIdDetalleSalida(rs.getLong(1));
                 }
             }
         } catch (SQLException e) {
@@ -178,15 +230,19 @@ public class SalidaController {
     }
 
     @PutMapping("/detalles/actualizar/{id}")
-    public DetalleSalida actualizarDetalle(@PathVariable Integer id, @RequestBody DetalleSalida detalle) {
-        String sql = "UPDATE Detalle_Salida SET ID_Salida = ?, ID_Producto = ?, Cantidad = ?, Subtotal = ? WHERE ID_Detalle_Salida = ?";
+    public DetalleSalida actualizarDetalle(@PathVariable Long id, @RequestBody DetalleSalida detalle) {
+        String sql = "UPDATE Detalle_Salida SET ID_Salida=?, ID_Producto=?, Cantidad=?, Precio_Unitario=?, Subtotal=?, ID_Usuario_Registro=?, Fecha_Registro=?, Estado=? WHERE ID_Detalle_Salida=?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, detalle.getSalidaId());
-            ps.setString(2, detalle.getID_Producto());
+            ps.setLong(1, detalle.getIdSalida());
+            ps.setLong(2, detalle.getIdProducto());
             ps.setInt(3, detalle.getCantidad());
-            ps.setBigDecimal(4, detalle.getSubtotal());
-            ps.setInt(5, id);
+            ps.setBigDecimal(4, detalle.getPrecioUnitario());
+            ps.setBigDecimal(5, detalle.getSubtotal());
+            ps.setLong(6, detalle.getIdUsuarioRegistro());
+            ps.setTimestamp(7, detalle.getFechaRegistro());
+            ps.setString(8, detalle.getEstado());
+            ps.setLong(9, id);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -195,11 +251,11 @@ public class SalidaController {
     }
 
     @DeleteMapping("/detalles/eliminar/{id}")
-    public String eliminarDetalle(@PathVariable Integer id) {
+    public String eliminarDetalle(@PathVariable Long id) {
         String sql = "DELETE FROM Detalle_Salida WHERE ID_Detalle_Salida = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setLong(1, id);
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 return "Detalle de salida eliminado correctamente.";
