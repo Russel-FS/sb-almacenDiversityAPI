@@ -1,12 +1,15 @@
 package com.api.diversity.service;
 
-import com.api.diversity.model.Rol;
-import com.api.diversity.repository.RolRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.api.diversity.model.Rol;
+import com.api.diversity.repository.RolRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class RolService {
@@ -41,9 +44,9 @@ public class RolService {
     }
 
     public void eliminar(Long id) {
-        if (!rolRepository.existsById(id)) {
-            throw new EntityNotFoundException("No se puede eliminar. Rol no encontrado con ID: " + id);
-        }
-        rolRepository.deleteById(id);
+        rolRepository.findById(id).ifPresent(rol -> {
+            rol.setEstado("Inactivo");
+            rolRepository.save(rol);
+        });
     }
 }
