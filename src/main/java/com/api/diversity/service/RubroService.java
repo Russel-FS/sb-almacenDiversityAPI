@@ -1,12 +1,15 @@
 package com.api.diversity.service;
 
-import com.api.diversity.model.Rubro;
-import com.api.diversity.repository.RubroRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.api.diversity.model.Rubro;
+import com.api.diversity.repository.RubroRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class RubroService {
@@ -44,9 +47,9 @@ public class RubroService {
     }
 
     public void eliminar(Long id) {
-        if (!rubroRepository.existsById(id)) {
-            throw new EntityNotFoundException("No se puede eliminar. Rubro no encontrado con ID: " + id);
-        }
-        rubroRepository.deleteById(id);
+      rubroRepository.findById(id).ifPresent(rubro -> {
+            rubro.setEstado("Inactivo");
+            rubroRepository.save(rubro);
+        });
     }
 }
