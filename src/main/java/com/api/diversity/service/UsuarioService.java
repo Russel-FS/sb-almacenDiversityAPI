@@ -10,10 +10,11 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.api.diversity.controller.UsuarioResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -30,8 +31,34 @@ public class UsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder; 
 
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
+     public List<UsuarioResponseDTO> listarTodos() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        
+        return usuarios.stream()
+                .map(this::convertirAUsuarioResponseDTO) 
+                .collect(Collectors.toList());
+    }
+
+       private UsuarioResponseDTO convertirAUsuarioResponseDTO(Usuario usuario) {
+        UsuarioResponseDTO dto = new UsuarioResponseDTO();
+        dto.setIdUsuario(usuario.getIdUsuario());
+        dto.setNombreUsuario(usuario.getNombreUsuario());
+        dto.setEmail(usuario.getEmail());
+        dto.setNombreCompleto(usuario.getNombreCompleto());
+        dto.setUrlImagen(usuario.getUrlImagen());
+        dto.setEstado(usuario.getEstado());
+        dto.setUltimoAcceso(usuario.getUltimoAcceso());
+
+        if (usuario.getRol() != null) {
+            dto.setNombreRol(usuario.getRol().getNombreRol()); 
+            dto.setID_Rol(usuario.getRol().getIdRol());
+        }
+        if (usuario.getRubro() != null) {
+            dto.setNombreRubro(usuario.getRubro().getNombre());
+            dto.setID_Rubro(usuario.getRubro().getIdRubro());
+        }
+
+        return dto;
     }
 
     public Optional<Usuario> buscarPorId(Long id) {
