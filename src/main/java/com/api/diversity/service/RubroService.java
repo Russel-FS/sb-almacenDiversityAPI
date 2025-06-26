@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.api.diversity.model.Rubro;
 import com.api.diversity.repository.RubroRepository;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -26,6 +27,11 @@ public class RubroService {
     }
 
     public Rubro registrar(Rubro rubro) {
+
+        if (rubroRepository.existsByCode(rubro.getCode())) {
+
+            throw new EntityExistsException("ya existe un rubro en el codigo" + rubro.getCode());
+        }
         if (rubro.getEstado() == null) {
             rubro.setEstado("Activo");
         }

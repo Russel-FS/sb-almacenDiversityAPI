@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RubroRepository extends JpaRepository<Rubro, Long> {
+    boolean existsByCode(String code);
 }
