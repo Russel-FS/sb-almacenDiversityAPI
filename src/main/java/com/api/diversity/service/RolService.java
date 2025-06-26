@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.api.diversity.model.Rol;
 import com.api.diversity.repository.RolRepository;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -26,6 +27,10 @@ public class RolService {
     }
 
     public Rol registrar(Rol rol) {
+
+        if (rolRepository.existsByNombreRol(rol.getNombreRol())) {
+            throw new EntityExistsException("nombre del rol ya existe");
+        }
         if (rol.getEstado() == null) {
             rol.setEstado("Activo");
         }

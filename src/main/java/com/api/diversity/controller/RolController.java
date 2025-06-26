@@ -35,6 +35,7 @@ public class RolController {
     public ResponseEntity<Rol> registrarRol(@RequestBody Rol rol) {
         Rol nuevoRol = rolService.registrar(rol);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoRol);
+
     }
 
     @PutMapping("/editar/{id}")
