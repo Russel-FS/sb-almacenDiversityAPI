@@ -18,8 +18,8 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping("/listar")
-    public List<Usuario> listarUsuarios() {
+     @GetMapping("/listar")
+    public List<UsuarioResponseDTO> listarTodosLosUsuarios() {
         return usuarioService.listarTodos();
     }
     
