@@ -47,7 +47,7 @@ public class RubroService {
     }
 
     public void eliminar(Long id) {
-      rubroRepository.findById(id).ifPresent(rubro -> {
+        rubroRepository.findById(id).ifPresent(rubro -> {
             rubro.setEstado("Inactivo");
             rubroRepository.save(rubro);
         });

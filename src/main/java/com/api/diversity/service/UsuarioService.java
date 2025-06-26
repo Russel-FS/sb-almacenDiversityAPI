@@ -6,17 +6,24 @@ import com.api.diversity.model.Usuario;
 import com.api.diversity.repository.RolRepository;
 import com.api.diversity.repository.RubroRepository;
 import com.api.diversity.repository.UsuarioRepository;
+
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.api.diversity.controller.UsuarioResponseDTO;
+
+import com.api.diversity.dtos.UsuarioDto;
+import com.api.diversity.mappers.UsuarioMapper;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
 
     @Autowired
@@ -29,50 +36,37 @@ public class UsuarioService {
     private RubroRepository rubroRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; 
+    private PasswordEncoder passwordEncoder;
 
-     public List<UsuarioResponseDTO> listarTodos() {
+    private final UsuarioMapper mapper;
+
+    public List<UsuarioDto> listarTodos() {
         List<Usuario> usuarios = usuarioRepository.findAll();
-        
+
         return usuarios.stream()
-                .map(this::convertirAUsuarioResponseDTO) 
+                .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
-       private UsuarioResponseDTO convertirAUsuarioResponseDTO(Usuario usuario) {
-        UsuarioResponseDTO dto = new UsuarioResponseDTO();
-        dto.setIdUsuario(usuario.getIdUsuario());
-        dto.setNombreUsuario(usuario.getNombreUsuario());
-        dto.setEmail(usuario.getEmail());
-        dto.setNombreCompleto(usuario.getNombreCompleto());
-        dto.setUrlImagen(usuario.getUrlImagen());
-        dto.setEstado(usuario.getEstado());
-        dto.setUltimoAcceso(usuario.getUltimoAcceso());
-
-        if (usuario.getRol() != null) {
-            dto.setNombreRol(usuario.getRol().getNombreRol()); 
-            dto.setID_Rol(usuario.getRol().getIdRol());
-        }
-        if (usuario.getRubro() != null) {
-            dto.setNombreRubro(usuario.getRubro().getNombre());
-            dto.setID_Rubro(usuario.getRubro().getIdRubro());
-        }
-
-        return dto;
+    public Optional<UsuarioDto> buscarPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .map(mapper::toDto);
     }
 
-    public Optional<Usuario> buscarPorId(Long id) {
-        return usuarioRepository.findById(id);
-    }
+    public UsuarioDto registrar(Usuario usuario) {
 
-    public Usuario registrar(Usuario usuario) {
-        
         Rol rol = rolRepository.findById(usuario.getRol().getIdRol())
                 .orElseThrow(
                         () -> new EntityNotFoundException("Rol no encontrado con ID: " + usuario.getRol().getIdRol()));
         Rubro rubro = rubroRepository.findById(usuario.getRubro().getIdRubro())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Rubro no encontrado con ID: " + usuario.getRubro().getIdRubro()));
+
+        // validacion de nombre y email
+        if (usuarioRepository.existsByEmail(
+                usuario.getEmail()) && usuarioRepository.existsByNombreUsuario(usuario.getNombreUsuario())) {
+            throw new EntityExistsException("nombre de usuario no disponible o el email ya existe");
+        }
 
         usuario.setRol(rol);
         usuario.setRubro(rubro);
@@ -81,27 +75,17 @@ public class UsuarioService {
             usuario.setEstado("Activo");
         }
 
-      
         String contrasenaCodificada = passwordEncoder.encode(usuario.getContrasena());
         usuario.setContrasena(contrasenaCodificada);
 
-        return usuarioRepository.save(usuario);
+        return mapper.toDto(usuarioRepository.save(usuario));
     }
 
-    public Usuario editar(Long id, Usuario usuarioDetails) {
-        
+    public UsuarioDto editar(Long id, Usuario usuarioDetails) {
+
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
 
-        
-
-        
-        if (usuarioDetails.getNombreUsuario() != null) {
-            usuario.setNombreUsuario(usuarioDetails.getNombreUsuario());
-        }
-        if (usuarioDetails.getEmail() != null) {
-            usuario.setEmail(usuarioDetails.getEmail());
-        }
         if (usuarioDetails.getNombreCompleto() != null) {
             usuario.setNombreCompleto(usuarioDetails.getNombreCompleto());
         }
@@ -115,12 +99,10 @@ public class UsuarioService {
             usuario.setEstado(usuarioDetails.getEstado());
         }
 
-       
         if (usuarioDetails.getContrasena() != null && !usuarioDetails.getContrasena().trim().isEmpty()) {
             usuario.setContrasena(passwordEncoder.encode(usuarioDetails.getContrasena()));
         }
 
-       
         if (usuarioDetails.getRol() != null && usuarioDetails.getRol().getIdRol() != null) {
             Rol rol = rolRepository.findById(usuarioDetails.getRol().getIdRol())
                     .orElseThrow(() -> new EntityNotFoundException(
@@ -134,14 +116,15 @@ public class UsuarioService {
                             "Rubro no encontrado con ID: " + usuarioDetails.getRubro().getIdRubro()));
             usuario.setRubro(rubro);
         }
-
-        return usuarioRepository.save(usuario);
+        usuario.setEmail(usuarioDetails.getEmail());// email de usuario no modificable
+        usuario.setNombreUsuario(usuarioDetails.getNombreUsuario());// campos no modificables
+        return mapper.toDto(usuarioRepository.save(usuario));
     }
 
     public void eliminar(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new EntityNotFoundException("No se puede eliminar. Usuario no encontrado con ID: " + id);
-        }
-        usuarioRepository.deleteById(id);
+        usuarioRepository.findById(id).ifPresent(usuario -> {
+            usuario.setEstado("Inactivo");
+            usuarioRepository.save(usuario);
+        });
     }
 }
