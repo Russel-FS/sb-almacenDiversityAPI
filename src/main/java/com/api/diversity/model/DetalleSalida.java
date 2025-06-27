@@ -14,11 +14,13 @@ public class DetalleSalida {
     @Column(name = "ID_Detalle_Salida")
     private Long idDetalleSalida;
 
-    @Column(name = "ID_Salida", nullable = false)
-    private Long idSalida;
+    @ManyToOne
+    @JoinColumn(name = "ID_Salida", nullable = false)
+    private Salida salida;
 
-    @Column(name = "ID_Producto", nullable = false)
-    private Long idProducto;
+    @ManyToOne
+    @JoinColumn(name = "ID_Producto", nullable = false)
+    private Producto producto;
 
     @Column(name = "Cantidad", nullable = false)
     private Integer cantidad;
@@ -29,8 +31,9 @@ public class DetalleSalida {
     @Column(name = "Subtotal", nullable = false)
     private BigDecimal subtotal;
 
-    @Column(name = "ID_Usuario_Registro", nullable = false)
-    private Long idUsuarioRegistro;
+    @ManyToOne
+    @JoinColumn(name = "ID_Usuario_Registro", nullable = false)
+    private Usuario usuarioRegistro;
 
     @Column(name = "Fecha_Registro")
     private LocalDateTime fechaRegistro;

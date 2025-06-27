@@ -28,7 +28,7 @@ public class ProductoController {
 
     @PostMapping("/crear")
     public Producto crearProducto(@RequestBody Producto producto) {
-        producto.setIdProducto(productos.size() + 1);
+        producto.setIdProducto(Long.valueOf(productos.size() + 1));
         productos.add(producto);
         return producto;
     }

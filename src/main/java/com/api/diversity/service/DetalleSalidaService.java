@@ -1,12 +1,12 @@
 package com.api.diversity.service;
 
+import com.api.diversity.dto.DetalleSalidaDTO;
 import com.api.diversity.model.DetalleSalida;
 import java.util.List;
-import java.util.Optional;
 
 public interface DetalleSalidaService {
-    List<DetalleSalida> findAll();
-    Optional<DetalleSalida> findById(Long id);
-    DetalleSalida save(DetalleSalida detalleSalida);
+    List<DetalleSalidaDTO> findAll();
+    DetalleSalida findById(Long id);
+    DetalleSalidaDTO save(DetalleSalidaDTO detalleSalidaDTO);
     void deleteById(Long id);
 }

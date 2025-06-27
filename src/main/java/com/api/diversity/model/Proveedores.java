@@ -27,7 +27,7 @@ public class Proveedores {
     @Column(name = "Telefono")
     private String telefono;
 
-    @Column(name = "Email")
+    @Column(name = "Email", nullable = false)
     private String email;
 
     @Column(name = "Estado")

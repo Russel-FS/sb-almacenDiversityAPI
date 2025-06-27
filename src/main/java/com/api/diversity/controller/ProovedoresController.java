@@ -25,6 +25,13 @@ public class ProovedoresController {
         return proveedoresService.save(proveedorDTO);
     }
 
+ 
+
+@GetMapping("/buscar/{id}")
+public ProveedoresDTO obtenerProveedorPorId(@PathVariable Long id) {
+    return com.api.diversity.mapper.ProveedoresMapper.toDTO(proveedoresService.findById(id));
+}
+
     @PutMapping("/actualizar/{id}")
     public ProveedoresDTO actualizarProveedor(@PathVariable Long id, @RequestBody ProveedoresDTO proveedorDTO) {
         proveedorDTO.setIdProveedor(id);
