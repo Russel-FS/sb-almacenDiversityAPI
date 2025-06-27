@@ -1,6 +1,9 @@
 package com.api.diversity.model;
 
 import lombok.Data;
+
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 @Data
@@ -29,4 +32,26 @@ public class Proveedores {
 
     @Column(name = "Estado")
     private String estado;
+
+    @Column(name = "Fecha_Creacion", updatable = false)
+    private LocalDateTime fechaCreacion;
+
+    @Column(name = "Fecha_Modificacion")
+    private LocalDateTime fechaModificacion;
+
+    @PrePersist
+    protected void onCreate() {
+        fechaCreacion = LocalDateTime.now();
+        fechaModificacion = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        fechaModificacion = LocalDateTime.now();
+    }
+
+    public enum EstadoProveedor {
+        Activo, Inactivo
+    }
+
 }
