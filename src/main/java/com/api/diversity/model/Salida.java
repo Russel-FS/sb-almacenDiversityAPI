@@ -20,7 +20,7 @@ public class Salida {
     @Column(name = "Tipo_Documento", nullable = false)
     private String tipoDocumento;
 
-    @Column(name = "Fecha_Salida", updatable = false, insertable = false)
+    @Column(name = "Fecha_Salida")
     private LocalDateTime fechaSalida;
 
     @Column(name = "Motivo_Salida")
