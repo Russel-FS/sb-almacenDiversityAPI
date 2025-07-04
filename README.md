@@ -117,43 +117,51 @@ spring.datasource.password=tu_password
 - `PUT /api/clientes/editar/{id}` - Editar cliente
 - `DELETE /api/clientes/eliminar/{id}` - Eliminar cliente
 
-## Usuarios Predefinidos
+### Entradas
 
-### Administrador
+- `GET /api/entradas/listar` - Listar todas las entradas
+- `GET /api/entradas/listar-por-proveedor/{idProveedor}` - Listar entradas por proveedor
+- `GET /api/entradas/listar-por-estado/{estado}` - Listar entradas por estado
+- `GET /api/entradas/buscar/{id}` - Buscar entrada por ID
+- `POST /api/entradas/registrar` - Registrar nueva entrada
+- `PUT /api/entradas/editar/{id}` - Editar entrada
+- `PUT /api/entradas/aprobar/{id}` - Aprobar entrada
+- `PUT /api/entradas/anular/{id}` - Anular entrada
+- `DELETE /api/entradas/eliminar/{id}` - Eliminar entrada
 
-- **Usuario**: bfuertes
-- **Email**: betzabet.fuertes@jcdiversity.com
-- **Contraseña**: adminpass123
+### Salidas
+
+- `GET /api/salidas/listar` - Listar todas las salidas
+- `GET /api/salidas/listar-por-cliente/{idCliente}` - Listar salidas por cliente
+- `GET /api/salidas/listar-por-estado/{estado}` - Listar salidas por estado
+- `GET /api/salidas/listar-por-tipo-documento/{tipoDocumento}` - Listar salidas por tipo de documento
+- `GET /api/salidas/buscar/{id}` - Buscar salida por ID
+- `POST /api/salidas/registrar` - Registrar nueva salida
+- `PUT /api/salidas/editar/{id}` - Editar salida
+- `PUT /api/salidas/aprobar/{id}` - Aprobar salida
+- `PUT /api/salidas/anular/{id}` - Anular salida
+- `DELETE /api/salidas/eliminar/{id}` - Eliminar salida
+
+## Usuario Administrador por Defecto
+
+Al iniciar la aplicación por primera vez, se creará automáticamente un usuario administrador:
+
+- **Usuario**: admin
+- **Email**: admin@diversity.com
+- **Contraseña**: admin123
 - **Rol**: Administrador
 - **Rubro**: Piñatería y Artículos de Fiesta
 
-### Supervisores
+### Datos Iniciales
 
-- **Usuario**: pcanaquiri
-- **Email**: priscila.canaquiri@jcdiversity.com
-- **Contraseña**: superpass123
-- **Rol**: Supervisor
-- **Rubro**: Librería y Útiles de Oficina
+El sistema también creará automáticamente:
 
-- **Usuario**: rflores
-- **Email**: russel.flores@jcdiversity.com
-- **Contraseña**: superpass456
-- **Rol**: Supervisor
-- **Rubro**: Sistemas de Seguridad y CCTV
-
-### Operadores
-
-- **Usuario**: gmalca
-- **Email**: guillermo.malca@jcdiversity.com
-- **Contraseña**: operadorpass123
-- **Rol**: Operador
-- **Rubro**: Piñatería y Artículos de Fiesta
-
-- **Usuario**: spalacios
-- **Email**: sahel.palacios@jcdiversity.com
-- **Contraseña**: operadorpass456
-- **Rol**: Operador
-- **Rubro**: Librería y Útiles de Oficina
+- **Roles**: Administrador, Supervisor, Operador
+- **Rubros**: Piñatería, Librería, Sistemas de Seguridad
+- **Categorías**: Piñatas, Globos, Cuadernos
+- **Productos**: Ejemplos de productos para cada categoría
+- **Proveedores**: 2 proveedores de ejemplo
+- **Clientes**: 2 clientes de ejemplo
 
 ## Características del Sistema
 
@@ -202,8 +210,8 @@ spring.datasource.password=tu_password
 
 ### Acceso a la Aplicación
 
-- **URL**: http://localhost:8080
-- **Puerto**: 8080 (configurable en application.properties)
+- **URL**: http://localhost:8081
+- **Puerto**: 8081 (configurable en application.properties)
 
 ## Estructura de la Base de Datos
 
