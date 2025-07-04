@@ -37,16 +37,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Crear roles básicos
         crearRoles();
-
-        // Crear rubros básicos
         crearRubros();
-
-        // Crear administrador por defecto
         crearAdministrador();
-
-        // Crear datos de ejemplo
         crearDatosEjemplo();
     }
 
@@ -120,7 +113,6 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void crearDatosEjemplo() {
-        // Solo crear datos de ejemplo si no existen
         if (categoriaRepository.count() == 0) {
             crearCategoriasEjemplo();
         }
