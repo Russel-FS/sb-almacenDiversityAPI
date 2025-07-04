@@ -119,6 +119,30 @@ CREATE TABLE Proveedores (
     CONSTRAINT UQ_Proveedor_Email UNIQUE (Email)
 );
 
+-- Tabla de Clientes
+CREATE TABLE Clientes (
+    ID_Cliente BIGINT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_Cliente VARCHAR(100) NOT NULL,
+    Tipo_Documento ENUM(
+        'DNI',
+        'RUC',
+        'CE',
+        'PASAPORTE'
+    ) NOT NULL,
+    Numero_Documento VARCHAR(20) NOT NULL,
+    Direccion TEXT,
+    Telefono VARCHAR(20),
+    Email VARCHAR(100),
+    Estado ENUM('Activo', 'Inactivo') DEFAULT 'Activo',
+    Fecha_Creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Fecha_Modificacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT UQ_Cliente_Documento UNIQUE (
+        Tipo_Documento,
+        Numero_Documento
+    ),
+    CONSTRAINT UQ_Cliente_Email UNIQUE (Email)
+);
+
 -- Tabla de Entradas
 CREATE TABLE Entradas (
     ID_Entrada BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -167,6 +191,7 @@ CREATE TABLE Salidas (
         'Factura',
         'Nota de Venta'
     ) NOT NULL,
+    ID_Cliente BIGINT,
     Fecha_Salida DATETIME DEFAULT CURRENT_TIMESTAMP,
     Motivo_Salida VARCHAR(100),
     Total_Venta DECIMAL(10, 2) NOT NULL CHECK (Total_Venta >= 0),
@@ -179,6 +204,7 @@ CREATE TABLE Salidas (
     ID_Usuario_Aprobacion BIGINT,
     Fecha_Aprobacion DATETIME,
     Observaciones TEXT,
+    FOREIGN KEY (ID_Cliente) REFERENCES Clientes (ID_Cliente),
     FOREIGN KEY (ID_Usuario_Registro) REFERENCES Usuarios (ID_Usuario),
     FOREIGN KEY (ID_Usuario_Aprobacion) REFERENCES Usuarios (ID_Usuario),
     CONSTRAINT UQ_Salida_Documento UNIQUE (
@@ -372,3 +398,395 @@ SET
     Contraseña = '$2a$12$nzNXLGWTBLK.xprKJj3QQOw/oI45zpNcw4bLTIhM1lzhcRz8yqMte' -- Contraseña: operadorpass456
 WHERE
     Email = 'sahel.palacios@jcdiversity.com';
+
+-- Inserción de clientes de ejemplo
+INSERT INTO
+    Clientes (
+        Nombre_Cliente,
+        Tipo_Documento,
+        Numero_Documento,
+        Direccion,
+        Telefono,
+        Email,
+        Estado
+    )
+VALUES (
+        'Juan Pérez García',
+        'DNI',
+        '12345678',
+        'Av. Arequipa 123, Lima',
+        '999888777',
+        'juan.perez@email.com',
+        'Activo'
+    ),
+    (
+        'María López Silva',
+        'DNI',
+        '87654321',
+        'Jr. Tacna 456, Arequipa',
+        '888777666',
+        'maria.lopez@email.com',
+        'Activo'
+    ),
+    (
+        'Empresa ABC S.A.C.',
+        'RUC',
+        '20123456789',
+        'Av. Javier Prado 789, Lima',
+        '777666555',
+        'ventas@empresaabc.com',
+        'Activo'
+    ),
+    (
+        'Carlos Rodríguez',
+        'CE',
+        'CE123456',
+        'Calle Los Pinos 321, Trujillo',
+        '666555444',
+        'carlos.rodriguez@email.com',
+        'Activo'
+    ),
+    (
+        'Fiesta Express E.I.R.L.',
+        'RUC',
+        '20567890123',
+        'Av. La Marina 654, Callao',
+        '555444333',
+        'info@fiestaexpress.com',
+        'Activo'
+    );
+
+-- Inserción de proveedores de ejemplo
+INSERT INTO
+    Proveedores (
+        Razon_Social,
+        RUC,
+        Direccion,
+        Telefono,
+        Email,
+        Estado
+    )
+VALUES (
+        'Distribuidora ABC S.A.C.',
+        '20123456789',
+        'Av. Industrial 123, Lima',
+        '999888777',
+        'ventas@distribuidoraabc.com',
+        'Activo'
+    ),
+    (
+        'Importadora XYZ E.I.R.L.',
+        '20567890123',
+        'Jr. Comercio 456, Callao',
+        '888777666',
+        'info@importadoraxyz.com',
+        'Activo'
+    ),
+    (
+        'Comercial Delta S.A.',
+        '20345678901',
+        'Av. Arequipa 789, Arequipa',
+        '777666555',
+        'contacto@comercialdelta.com',
+        'Activo'
+    ),
+    (
+        'Suministros Omega S.A.C.',
+        '20789012345',
+        'Calle Los Pinos 321, Trujillo',
+        '666555444',
+        'ventas@suministrosomega.com',
+        'Activo'
+    ),
+    (
+        'Proveedora Sigma E.I.R.L.',
+        '20901234567',
+        'Av. La Marina 654, Piura',
+        '555444333',
+        'info@proveedorasigma.com',
+        'Activo'
+    );
+
+-- Inserción de categorías de ejemplo
+INSERT INTO
+    Categorias (
+        ID_Rubro,
+        Nombre_Categoria,
+        Descripcion,
+        Estado,
+        created_by
+    )
+VALUES (
+        1,
+        'Piñatas',
+        'Piñatas de diferentes tamaños y diseños',
+        'Activo',
+        1
+    ),
+    (
+        1,
+        'Globos',
+        'Globos de látex y metalizados',
+        'Activo',
+        1
+    ),
+    (
+        1,
+        'Decoración',
+        'Artículos decorativos para fiestas',
+        'Activo',
+        1
+    ),
+    (
+        2,
+        'Cuadernos',
+        'Cuadernos de diferentes tamaños y tipos',
+        'Activo',
+        2
+    ),
+    (
+        2,
+        'Lápices y Bolígrafos',
+        'Instrumentos de escritura',
+        'Activo',
+        2
+    ),
+    (
+        2,
+        'Papelería',
+        'Papel y artículos de oficina',
+        'Activo',
+        2
+    ),
+    (
+        3,
+        'Cámaras IP',
+        'Cámaras de vigilancia IP',
+        'Activo',
+        3
+    ),
+    (
+        3,
+        'DVRs',
+        'Grabadores de video digital',
+        'Activo',
+        3
+    ),
+    (
+        3,
+        'Cables y Accesorios',
+        'Cables y accesorios para CCTV',
+        'Activo',
+        3
+    );
+
+-- Inserción de productos de ejemplo
+INSERT INTO
+    Productos (
+        Codigo_Producto,
+        Nombre_Producto,
+        Descripcion,
+        ID_Categoria,
+        Precio_Compra,
+        Precio_Venta,
+        Stock_Actual,
+        Stock_Minimo,
+        Stock_Maximo,
+        Estado,
+        created_by
+    )
+VALUES (
+        'PIN001',
+        'Piñata Mickey Mouse',
+        'Piñata de Mickey Mouse tamaño grande',
+        1,
+        25.00,
+        35.00,
+        10,
+        5,
+        20,
+        'Activo',
+        1
+    ),
+    (
+        'PIN002',
+        'Piñata Spiderman',
+        'Piñata de Spiderman tamaño mediano',
+        1,
+        20.00,
+        30.00,
+        15,
+        5,
+        25,
+        'Activo',
+        1
+    ),
+    (
+        'GLO001',
+        'Globos Metalizados Dorados',
+        'Pack de 50 globos metalizados dorados',
+        2,
+        15.00,
+        25.00,
+        20,
+        10,
+        50,
+        'Activo',
+        1
+    ),
+    (
+        'GLO002',
+        'Globos de Látex Multicolor',
+        'Pack de 100 globos de látex multicolor',
+        2,
+        12.00,
+        20.00,
+        30,
+        15,
+        60,
+        'Activo',
+        1
+    ),
+    (
+        'DEC001',
+        'Guirnaldas de Papel',
+        'Guirnaldas decorativas de papel crepé',
+        3,
+        8.00,
+        15.00,
+        25,
+        10,
+        40,
+        'Activo',
+        1
+    ),
+    (
+        'CUA001',
+        'Cuaderno A4 100 hojas',
+        'Cuaderno universitario A4 con 100 hojas',
+        4,
+        5.00,
+        8.00,
+        50,
+        20,
+        100,
+        'Activo',
+        2
+    ),
+    (
+        'CUA002',
+        'Cuaderno A5 80 hojas',
+        'Cuaderno escolar A5 con 80 hojas',
+        4,
+        3.50,
+        6.00,
+        40,
+        15,
+        80,
+        'Activo',
+        2
+    ),
+    (
+        'LAP001',
+        'Lápiz HB Pack 12',
+        'Pack de 12 lápices HB marca Faber',
+        5,
+        4.00,
+        7.00,
+        30,
+        10,
+        60,
+        'Activo',
+        2
+    ),
+    (
+        'BOL001',
+        'Bolígrafos Azules Pack 10',
+        'Pack de 10 bolígrafos azules',
+        5,
+        6.00,
+        10.00,
+        25,
+        10,
+        50,
+        'Activo',
+        2
+    ),
+    (
+        'PAP001',
+        'Papel Bond A4 500 hojas',
+        'Resma de papel bond A4 500 hojas',
+        6,
+        12.00,
+        18.00,
+        20,
+        5,
+        40,
+        'Activo',
+        2
+    ),
+    (
+        'CAM001',
+        'Cámara IP HD 1080p',
+        'Cámara de vigilancia IP HD 1080p',
+        7,
+        150.00,
+        250.00,
+        8,
+        3,
+        15,
+        'Activo',
+        3
+    ),
+    (
+        'CAM002',
+        'Cámara IP 4K',
+        'Cámara de vigilancia IP 4K Ultra HD',
+        7,
+        300.00,
+        450.00,
+        5,
+        2,
+        10,
+        'Activo',
+        3
+    ),
+    (
+        'DVR001',
+        'DVR 8 Canales',
+        'Grabador de video digital 8 canales',
+        8,
+        200.00,
+        320.00,
+        6,
+        2,
+        12,
+        'Activo',
+        3
+    ),
+    (
+        'DVR002',
+        'DVR 16 Canales',
+        'Grabador de video digital 16 canales',
+        8,
+        350.00,
+        550.00,
+        4,
+        1,
+        8,
+        'Activo',
+        3
+    ),
+    (
+        'CAB001',
+        'Cable Coaxial RG59 100m',
+        'Cable coaxial RG59 100 metros',
+        9,
+        80.00,
+        120.00,
+        10,
+        5,
+        20,
+        'Activo',
+        3
+    );
